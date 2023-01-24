@@ -1,12 +1,12 @@
 Bs_exp_vec = 4:8;
 %% Initial Parameters
 Domain = [0,1;0,1];
-loops = 4000;
+loops = 12000;
 nplot = 1000;
-dt = 1/4000;
+dt = 1/12000;
 % characterize the initial data (0 = sin functions, 1 = gauss blob, 2 =
 % random function)
-init_data = 1;
+init_data = 0;
 
 % Gauss Blob params
 sigma = [0.2,0.2];
@@ -36,7 +36,7 @@ RK4_a = [0,1/2,1/2,1];
 %treecode = {[0,0],[0,1],[0,2],[0,3],[1,0],[1,1],[1,2],[1,3],[2,0],[2,1],[2,2],[2,3],[3,0],[3,1],[3,2],[3,3]};
 
 % level 2 and 3
-treecode = {[0,0],[0,1,0],[0,1,1],[0,1,2],[0,1,3],[0,2],[0,3],[1,0],[1,1],[1,2],[1,3],[2,0],[2,1],[2,2],[2,3],[3,0],[3,1],[3,2],[3,3]};
+%treecode = {[0,0],[0,1,0],[0,1,1],[0,1,2],[0,1,3],[0,2],[0,3],[1,0],[1,1],[1,2],[1,3],[2,0],[2,1],[2,2],[2,3],[3,0],[3,1],[3,2],[3,3]};
 
 % level 3 and 4
 %treecode = {[0,0,0],[0,0,1],[0,0,2],[0,0,3,0],[0,0,3,1],[0,0,3,2],[0,0,3,3],[0,1,0],[0,1,1],[0,1,2],[0,1,3],[0,2,0],[0,2,1],[0,2,2],[0,2,3],[0,3,0],[0,3,1],[0,3,2],[0,3,3],[1,0,0],[1,0,1],[1,0,2],[1,0,3],[1,1,0],[1,1,1],[1,1,2],[1,1,3],[1,2,0],[1,2,1],[1,2,2],[1,2,3],[1,3,0],[1,3,1],[1,3,2],[1,3,3],[2,0,0],[2,0,1],[2,0,2],[2,0,3],[2,1,0],[2,1,1],[2,1,2],[2,1,3],[2,2,0],[2,3,0],[3,0,0],[3,1,0],[3,2,0],[3,3,0],[2,2,1],[2,3,1],[3,0,1],[3,1,1],[3,2,1],[3,3,1],[2,2,2],[2,3,2],[3,0,2],[3,1,2],[3,2,2],[3,3,2],[2,2,3],[2,3,3],[3,0,3],[3,1,3],[3,2,3],[3,3,3]};
@@ -45,7 +45,7 @@ treecode = {[0,0],[0,1,0],[0,1,1],[0,1,2],[0,1,3],[0,2],[0,3],[1,0],[1,1],[1,2],
 %treecode = {[0,0,0],[0,0,1],[0,0,2],[0,0,3,0],[0,0,3,1],[0,0,3,2],[0,0,3,3],[0,1,0],[0,1,1],[0,1,2],[0,1,3],[0,2,0],[0,2,1],[0,2,2],[0,2,3],[0,3,0],[0,3,1],[0,3,2],[0,3,3],[1,0],[1,1],[1,2],[1,3],[2,0],[2,1],[2,2],[2,3],[3,0],[3,1],[3,2],[3,3]};
 
 % 2,3,4 and 5
-%treecode = {[0,0,0],[0,0,1],[0,0,2],[0,0,3,0],[0,0,3,1],[0,0,3,2],[0,0,3,3,0],[0,0,3,3,1],[0,0,3,3,2],[0,0,3,3,3],[0,1,0],[0,1,1],[0,1,2,0],[0,1,2,1],[0,1,2,2],[0,1,2,3],[0,1,3],[0,2,0],[0,2,1,0],[0,2,1,1],[0,2,1,2],[0,2,1,3],[0,2,2],[0,2,3],[0,3,0,0],[0,3,0,1],[0,3,0,2],[0,3,0,3],[0,3,1],[0,3,2],[0,3,3],[1,0],[1,1],[1,2],[1,3],[2,0],[2,1],[2,2],[2,3],[3,0],[3,1],[3,2],[3,3]};
+treecode = {[0,0,0],[0,0,1],[0,0,2],[0,0,3,0],[0,0,3,1],[0,0,3,2],[0,0,3,3,0],[0,0,3,3,1],[0,0,3,3,2],[0,0,3,3,3],[0,1,0],[0,1,1],[0,1,2,0],[0,1,2,1],[0,1,2,2],[0,1,2,3],[0,1,3],[0,2,0],[0,2,1,0],[0,2,1,1],[0,2,1,2],[0,2,1,3],[0,2,2],[0,2,3],[0,3,0,0],[0,3,0,1],[0,3,0,2],[0,3,0,3],[0,3,1],[0,3,2],[0,3,3],[1,0],[1,1],[1,2],[1,3],[2,0],[2,1],[2,2],[2,3],[3,0],[3,1],[3,2],[3,3]};
 
 maxlevel = max(cellfun(@length, treecode));
 minlevel = min(cellfun(@length, treecode));
@@ -69,8 +69,8 @@ end
 error_vec_two_norm = zeros(length(Bs_exp_vec),1);
 error_vec_infty_norm = zeros(length(Bs_exp_vec),1);
 u_Bs = zeros(length(Bs_exp_vec),nblocks*max_Bs^2);
+u_Bs_0 = zeros(length(Bs_exp_vec),nblocks*max_Bs^2);
 
-max_array = zeros(size(Bs_exp_vec,2),nblocks)
 for exp = 1:size(Bs_exp_vec,2)
     Bs_exp = Bs_exp_vec(exp);
     Bs = 2^Bs_exp+1;
@@ -183,7 +183,6 @@ for exp = 1:size(Bs_exp_vec,2)
         Y = Data.Y{i};
         if init_data == 0   
             Z = sin_cos(X,Y,a);
-            max_array(exp,i) = max(max(abs(Z)));
         elseif init_data == 1
             Z = gauss(X,Y,sigma,mu);
         elseif init_data == 2
@@ -202,7 +201,14 @@ for exp = 1:size(Bs_exp_vec,2)
         
     
     
-     
+    solution = zeros(nblocks*vec_range,1);
+    for block = 1:nblocks
+        if init_data == 0
+            solution((block-1)*vec_range+1:block*vec_range) = reshape(sin_cos(Data.X{block},Data.Y{block},a),vec_range,1);
+        else
+            solution((block-1)*vec_range+1:block*vec_range) = reshape(gauss(Data.X{block},Data.Y{block},sigma,mu),vec_range,1);
+        end
+    end
     
     
     
@@ -258,15 +264,8 @@ for exp = 1:size(Bs_exp_vec,2)
     
     
     
-    solution = zeros(nblocks*vec_range,1);
-    for block = 1:nblocks
-        if init_data == 0
-            solution((block-1)*vec_range+1:block*vec_range) = reshape(sin_cos(Data.X{block}-dt*loops,Data.Y{block},a),vec_range,1);
-        else
-            solution((block-1)*vec_range+1:block*vec_range) = reshape(gauss(Data.X{block}-dt*loops,Data.Y{block},sigma,mu),vec_range,1);
-        end
-    end
     
+    u_Bs_0(exp,1:nblocks*vec_range) = solution;
     u_Bs(exp,1:nblocks*vec_range) = u;
     error_vec_two_norm(exp) = norm(u-solution)/norm(solution);
     error_vec_infty_norm(exp) = max(abs(u-solution));
@@ -290,10 +289,11 @@ f.Position = [100 0 1000 1000];
 ax = gca; 
 ax.FontSize = 20; 
 
-
-save_cell{1} = u_Bs;
-save_cell{2} = error_vec_two_norm;
-save_cell{3} = error_vec_infty_norm;
+save_cell{1} = u_Bs_0;
+save_cell{2} = u_Bs;
+save_cell{3} = error_vec_two_norm;
+save_cell{4} = error_vec_infty_norm;
+save_cell{5} = error_vec_infty_norm./max(abs(u_Bs_0),[],2);
 
 if init_data == 1
     save("error_infty_exp_"+num2str(Bs_exp_vec(1))+"_"+num2str(Bs_exp_vec(end))+"_level_"+num2str(minlevel)+"_"+num2str(maxlevel)+"_gauss_loops="+num2str(loops)+".mat",'save_cell');
